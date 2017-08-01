@@ -11,14 +11,18 @@ void setup(){
 }
 
 void loop(){
+  if(Serial.available() > 0){
+   StaticJsonBuffer<200> jsonBuffer;
+   String inp = Serial.readStringUntil('\n');
+   JsonObject& req = jsonBuffer.parseObject(inp);
 
-  StaticJsonBuffer<200> jsonBuffer;
-  JsonObject& req = jsonBuffer.createObject();
-  req["value"] = analogRead(0);
+   String output;
+   req.printTo(output);
+   Serial.println(output);
+   Serial.print(output.length());
 
-  httpSendData(M95, "190.29.76.174", "8080", req);
-
-  while (1) {
-    /* code */
-  }
+   if(req.success()){
+     httpSendData(M95, "50.23.124.68", "80", req);
+   }
+ }
 }

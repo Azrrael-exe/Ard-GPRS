@@ -1,0 +1,6 @@
+POST /api/v1.6/devices/vmi/capas/values?token=zjLwMAMo3TzwgFqZ6vL2rCHmvPMhjl HTTP/1.1
+Host: things.ubidots.com
+Content-Type: application/json
+Content-Length: 12
+
+{"value":10}

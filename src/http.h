@@ -19,14 +19,14 @@ void config(SoftwareSerial& gprs){
   }
   Serial.println("---");
 
-  gprs.print("AT+QIMUX?\r");
-  Serial.print("Mux:");
-  delay(100);
-  gprs.read();
-  while(gprs.available()){
-    Serial.print(char(gprs.read()));
-  }
-  Serial.println("---");
+  // gprs.print("AT+QIMUX?\r");
+  // Serial.print("Mux:");
+  // delay(100);
+  // gprs.read();
+  // while(gprs.available()){
+  //   Serial.print(char(gprs.read()));
+  // }
+  // Serial.println("---");
 }
 
 void setAPM(SoftwareSerial& gprs, String apm){
@@ -44,7 +44,7 @@ void httpSendData(SoftwareSerial& gprs, String ip, String port, JsonObject& req)
 
   Serial.println("--- Open TCP/IP ---");
   gprs.print("AT+QIOPEN=\"TCP\",\""+ ip + "\"," + port +"\r");
-  delay(100);
+  delay(5000);
   while (gprs.available()) {
     Serial.print(char(gprs.read()));
   }
@@ -52,7 +52,7 @@ void httpSendData(SoftwareSerial& gprs, String ip, String port, JsonObject& req)
 
   Serial.println("--- Send Data ---");
   gprs.print("AT+QISEND\r");//
-  delay(100);
+  delay(1000);
   while (gprs.available()) {
     Serial.print(char(gprs.read()));
   }
@@ -62,13 +62,13 @@ void httpSendData(SoftwareSerial& gprs, String ip, String port, JsonObject& req)
   req.printTo(output);
 
   Serial.println("--- Write Data ---");
-  gprs.print("POST /test HTTP/1.1\r\n");
-  gprs.print("Content-Type: application/json\r\n");
-  gprs.print("User-Agent: QUECTEL_MODULE2\r\n");
-  gprs.print("Content-Length:");gprs.print(output.length());gprs.print("\r\n");
-  gprs.print("\r\n");
-  gprs.print(output);
-  gprs.print("\x1A");
+  gprs.println("POST /api/v1.6/devices/vmi/capas/values?token=zjLwMAMo3TzwgFqZ6vL2rCHmvPMhjl HTTP/1.1");
+  gprs.println("Host: things.ubidots.com");
+  gprs.println("Content-Type: application/json");
+  gprs.print("Content-Length: ");gprs.println(output.length());
+  gprs.println("");
+  gprs.println(output);
+  gprs.write(0x1A);
   delay(1000);
   while (gprs.available()) {
     Serial.print(char(gprs.read()));
@@ -77,7 +77,7 @@ void httpSendData(SoftwareSerial& gprs, String ip, String port, JsonObject& req)
   Serial.println("--- Waiting ---");
   delay(5000);
   while (gprs.available()) {
-    gprs.read();
+    Serial.print(char(gprs.read()));
   }
 
   Serial.println("--- Close TCP/IP ---");
